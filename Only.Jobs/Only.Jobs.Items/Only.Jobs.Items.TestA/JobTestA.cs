@@ -1,8 +1,6 @@
-﻿using log4net;
-using Only.Jobs.Core.Business.Info;
-using Only.Jobs.Core.Business.Manager;
+﻿using System;
+using log4net;
 using Quartz;
-using System;
 
 namespace Only.Jobs.Items.TestA
 {

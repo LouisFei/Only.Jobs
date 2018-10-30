@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
-using Only.Jobs.Core.Business.Info;
-using Only.Jobs.Core.Common;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Web.Mvc;
+
+using Newtonsoft.Json;
+using Only.Jobs.Core.Business.Info;
+using Only.Jobs.Core.Common;
 
 namespace Only.Jobs.Web.Controllers
 {
@@ -11,21 +12,45 @@ namespace Only.Jobs.Web.Controllers
     {
         #region JsonResult
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data">数据对象</param>
+        /// <returns></returns>
         public new JsonResult Json(object data)
         {
             return new NewtonJsonResult(data, new JsonSerializerSettings() { DateFormatString = "yyyy-MM-dd HH:mm:ss" });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data">数据对象</param>
+        /// <param name="behavior">请求行为设置</param>
+        /// <returns></returns>
         public new JsonResult Json(object data, JsonRequestBehavior behavior)
         {
             return new NewtonJsonResult(data, behavior, new JsonSerializerSettings() { DateFormatString = "yyyy-MM-dd HH:mm:ss" });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data">数据对象</param>
+        /// <param name="behavior">请求行为设置</param>
+        /// <param name="DateFormatString">日期格式化</param>
+        /// <returns></returns>
         public JsonResult Json(object data, JsonRequestBehavior behavior, string DateFormatString)
         {
             return new NewtonJsonResult(data, behavior, new JsonSerializerSettings() { DateFormatString = DateFormatString });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data">数据对象</param>
+        /// <param name="DateFormatString">日期格式化字符串</param>
+        /// <returns></returns>
         public new JsonResult Json(object data, string DateFormatString)
         {
             return new NewtonJsonResult(data, new JsonSerializerSettings() { DateFormatString = DateFormatString });
@@ -41,8 +66,8 @@ namespace Only.Jobs.Web.Controllers
         public PageParameter GetPageParameter()
         {
             PageParameter parameter = new PageParameter();
-            parameter.rows = WebHelper.GetRequestInt("rows", 1);
-            parameter.currentPageIndex = WebHelper.GetRequestInt("page", 1);
+            parameter.Rows = WebHelper.GetRequestInt("rows", 1);
+            parameter.CurrentPageIndex = WebHelper.GetRequestInt("page", 1);
             string Param = WebHelper.GetRequestString("Param");
             if (!string.IsNullOrEmpty(Param))
             {

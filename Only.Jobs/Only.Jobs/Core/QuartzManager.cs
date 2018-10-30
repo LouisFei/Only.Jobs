@@ -1,13 +1,14 @@
-﻿using Only.Jobs.Core.Business.Info;
-using Only.Jobs.Core.Services;
-using Quartz;
-using Quartz.Impl;
-using Quartz.Impl.Triggers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Web;
+
+using Quartz;
+using Only.Jobs.Core.Business.Info;
+using Only.Jobs.Core.Services;
+using Quartz.Impl;
+using Quartz.Impl.Triggers;
 
 namespace Only.Jobs.Core
 {
@@ -29,7 +30,7 @@ namespace Only.Jobs.Core
                 assembly = Assembly.LoadFrom(assemblyName);
                 type = assembly.GetType(className, true, true);
             }
-            catch (Exception ex)
+            catch
             {
             }
             return type;
@@ -79,81 +80,89 @@ namespace Only.Jobs.Core
         /// <param name="jobInfo"></param>
         public void ScheduleJob(IScheduler scheduler, BackgroundJobInfo jobInfo)
         {
-            if (ValidExpression(jobInfo.CronExpression))
+            if(ValidExpression(jobInfo.CronExpression) == false)
             {
-                Type type = GetClassInfo(jobInfo.AssemblyName, jobInfo.ClassName);
-                if (type != null)
-                {
-                    IJobDetail job = new JobDetailImpl(jobInfo.BackgroundJobId.ToString(), jobInfo.BackgroundJobId.ToString() + "Group", type);
-                    job.JobDataMap.Add("Parameters", jobInfo.JobArgs);
-                    job.JobDataMap.Add("JobName", jobInfo.Name);
-
-                    CronTriggerImpl trigger = new CronTriggerImpl();
-                    trigger.CronExpressionString = jobInfo.CronExpression;
-                    trigger.Name = jobInfo.BackgroundJobId.ToString();
-                    trigger.Description = jobInfo.Description;
-                    trigger.StartTimeUtc = DateTime.UtcNow;
-                    trigger.Group = jobInfo.BackgroundJobId + "TriggerGroup";
-                    scheduler.ScheduleJob(job, trigger);
-                }
-                else
-                {
-                    new BackgroundJobService().WriteBackgroundJoLog(jobInfo.BackgroundJobId, jobInfo.Name, DateTime.Now, jobInfo.AssemblyName + jobInfo.ClassName + "无效，无法启动该任务");
-                }
-            }
-            else
-            {
+                //不正确的Cron表达式，无法启动该任务
                 new BackgroundJobService().WriteBackgroundJoLog(jobInfo.BackgroundJobId, jobInfo.Name, DateTime.Now, jobInfo.CronExpression + "不是正确的Cron表达式,无法启动该任务");
+                return;
             }
+
+            Type type = GetClassInfo(jobInfo.AssemblyName, jobInfo.ClassName);
+            if (type == null)
+            {
+                //任务类型无效，无法启动该任务
+                new BackgroundJobService().WriteBackgroundJoLog(jobInfo.BackgroundJobId, jobInfo.Name, DateTime.Now, jobInfo.AssemblyName + jobInfo.ClassName + "无效，无法启动该任务");
+                return;
+            }
+
+            IJobDetail job = new JobDetailImpl(jobInfo.BackgroundJobId.ToString(), jobInfo.BackgroundJobId.ToString() + "Group", type);
+            job.JobDataMap.Add("Parameters", jobInfo.JobArgs);
+            job.JobDataMap.Add("JobName", jobInfo.Name);
+
+            CronTriggerImpl trigger = new CronTriggerImpl();
+            trigger.CronExpressionString = jobInfo.CronExpression;
+            trigger.Name = jobInfo.BackgroundJobId.ToString();
+            trigger.Description = jobInfo.Description;
+            trigger.StartTimeUtc = DateTime.UtcNow;
+            trigger.Group = jobInfo.BackgroundJobId + "TriggerGroup";
+
+            scheduler.ScheduleJob(job, trigger);
         }
 
 
         /// <summary>
         /// Job状态管控
         /// </summary>
-        /// <param name="Scheduler"></param>
-        public void JobScheduler(IScheduler Scheduler)
+        /// <param name="scheduler">调度器</param>
+        public void JobScheduler(IScheduler scheduler)
         {
-            List<BackgroundJobInfo> list = new BackgroundJobService().GeAllowScheduleJobInfoList();
-            if (list != null && list.Count > 0)
+            //获取允许调度的Job集合
+            List<BackgroundJobInfo> jobList = new BackgroundJobService().GetAllowScheduleJobInfoList();
+            if (jobList == null || jobList.Count <= 0)
             {
-                foreach (BackgroundJobInfo jobInfo in list)
+                return;
+            }
+
+            foreach (var jobInfo in jobList)
+            {
+                var jobKey = new JobKey(jobInfo.BackgroundJobId.ToString(), jobInfo.BackgroundJobId.ToString() + "Group");
+
+                if (scheduler.CheckExists(jobKey) == false) //判断任务是否已在任务调度器中。
                 {
-                    JobKey jobKey = new JobKey(jobInfo.BackgroundJobId.ToString(), jobInfo.BackgroundJobId.ToString() + "Group");
-                    if (Scheduler.CheckExists(jobKey) == false)
+                    //新添加任务
+                    if (jobInfo.State == 1 || jobInfo.State == 3)
                     {
-                        if (jobInfo.State == 1 || jobInfo.State == 3)
+                        //把（1启动，3启动中的）任务添加到任务调度器
+                        ScheduleJob(scheduler, jobInfo);
+
+                        if (scheduler.CheckExists(jobKey) == false)
                         {
-                            ScheduleJob(Scheduler, jobInfo);
-                            if (Scheduler.CheckExists(jobKey) == false)
-                            {
-                                new BackgroundJobService().UpdateBackgroundJobState(jobInfo.BackgroundJobId, 0);
-                            }
-                            else
-                            {
-                                new BackgroundJobService().UpdateBackgroundJobState(jobInfo.BackgroundJobId, 1);
-                            }
+                            new BackgroundJobService().UpdateBackgroundJobState(jobInfo.BackgroundJobId, 0); //停止
                         }
-                        else if (jobInfo.State == 5)
+                        else
                         {
-                            new BackgroundJobService().UpdateBackgroundJobState(jobInfo.BackgroundJobId, 0);
+                            new BackgroundJobService().UpdateBackgroundJobState(jobInfo.BackgroundJobId, 1); //运行
                         }
                     }
-                    else
+                    else if (jobInfo.State == 5)
                     {
-                        if (jobInfo.State == 5)
-                        {
-                            Scheduler.DeleteJob(jobKey);
-                            new BackgroundJobService().UpdateBackgroundJobState(jobInfo.BackgroundJobId, 0);
-                        }
-                        else if (jobInfo.State == 3)
-                        {
-                            new BackgroundJobService().UpdateBackgroundJobState(jobInfo.BackgroundJobId, 1);
-                        }
+                        new BackgroundJobService().UpdateBackgroundJobState(jobInfo.BackgroundJobId, 0);//停止
+                    }
+                }
+                else
+                {
+                    //已存在任务
+                    if (jobInfo.State == 5) //停止中……
+                    {
+                        scheduler.DeleteJob(jobKey); //删除任务
+                        new BackgroundJobService().UpdateBackgroundJobState(jobInfo.BackgroundJobId, 0);//停止
+                    }
+                    else if (jobInfo.State == 3) //正在启动中……
+                    {
+                        new BackgroundJobService().UpdateBackgroundJobState(jobInfo.BackgroundJobId, 1);//运行
                     }
                 }
             }
         }
-
     }
 }

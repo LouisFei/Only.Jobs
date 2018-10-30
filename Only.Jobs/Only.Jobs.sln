@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Only.Jobs.Web", "Only.Jobs.Web\Only.Jobs.Web.csproj", "{B0450136-8A7F-4557-9A79-62D58D1E9970}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Only.Jobs.Core", "Only.Jobs.Core\Only.Jobs.Core.csproj", "{8904F027-6C8A-4B87-9238-BCB8FA0C2B5C}"
@@ -53,5 +55,8 @@ Global
 		{24AE7792-2D28-4E2E-8CBE-50F7A8E1FE2D} = {4DAFE612-7820-4D39-97AB-92CD8BC8E61A}
 		{568F4A32-1C33-476B-A90F-A3CBE66B501E} = {4DAFE612-7820-4D39-97AB-92CD8BC8E61A}
 		{7D8D2FE5-302A-4DAB-8555-A4842AA3A3BF} = {4DAFE612-7820-4D39-97AB-92CD8BC8E61A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {26027041-8D95-417E-B667-1611F5C65E66}
 	EndGlobalSection
 EndGlobal

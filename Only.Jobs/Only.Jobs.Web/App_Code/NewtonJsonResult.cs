@@ -1,23 +1,33 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Web;
 using System.Web.Mvc;
-
+using Newtonsoft.Json;
 
 namespace Only.Jobs.Web
 {
+    /// <summary>
+    /// NewtongJson结果
+    /// </summary>
     public class NewtonJsonResult : JsonResult
     {
         public JsonSerializerSettings JsonSerializerSettings { get; set; }
+
         public NewtonJsonResult()
         {
             this.JsonRequestBehavior = JsonRequestBehavior.DenyGet;
         }
+
         public NewtonJsonResult(object obj)
         {
             this.JsonRequestBehavior = JsonRequestBehavior.DenyGet;
             this.Data = obj;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj">数据对象</param>
+        /// <param name="jsonSerializerSettings">json序列化设置</param>
         public NewtonJsonResult(object obj, JsonSerializerSettings jsonSerializerSettings)
         {
             this.JsonRequestBehavior = JsonRequestBehavior.DenyGet;
@@ -25,6 +35,12 @@ namespace Only.Jobs.Web
             this.JsonSerializerSettings = jsonSerializerSettings;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj">数据对象</param>
+        /// <param name="behavior">请求行为设置</param>
+        /// <param name="jsonSerializerSettings">json序列化设置</param>
         public NewtonJsonResult(object obj, JsonRequestBehavior behavior, JsonSerializerSettings jsonSerializerSettings)
         {
             this.JsonRequestBehavior = behavior;

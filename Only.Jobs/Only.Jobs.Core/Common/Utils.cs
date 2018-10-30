@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Only.Jobs.Core.Common
 {
@@ -15,15 +12,18 @@ namespace Only.Jobs.Core.Common
         /// <returns></returns>
         public static List<Guid> StringToGuidList(string strArray)
         {
-            List<System.Guid> list = new List<System.Guid>();
+            List<Guid> list = new List<Guid>();
             if (!string.IsNullOrWhiteSpace(strArray))
             {
                 string[] arrays = strArray.Split(',');
                 foreach (string str in arrays)
                 {
-                    Guid result;
+                    Guid result = Guid.NewGuid();
                     if (Guid.TryParse(str, out result))
+                    {
                         list.Add(result);
+                    }
+                        
                 }
             }
             return list;

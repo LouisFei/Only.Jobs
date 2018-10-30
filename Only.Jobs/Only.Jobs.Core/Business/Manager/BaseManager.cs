@@ -1,5 +1,4 @@
 ﻿using SqlSugar;
-using System;
 
 namespace Only.Jobs.Core.Business.Manager
 {
@@ -9,7 +8,7 @@ namespace Only.Jobs.Core.Business.Manager
         {
             get
             {
-                return new DbManager().db;
+                return new DbManager().Db;
             }
         }
     }

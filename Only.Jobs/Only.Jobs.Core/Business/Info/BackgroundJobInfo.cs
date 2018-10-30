@@ -1,5 +1,4 @@
-﻿using SqlSugar;
-using System;
+﻿using System;
 
 namespace Only.Jobs.Core.Business.Info
 {
@@ -11,7 +10,7 @@ namespace Only.Jobs.Core.Business.Info
         /// <summary>
         /// JobID
         /// </summary>				
-        public System.Guid BackgroundJobId { get; set; }
+        public Guid BackgroundJobId { get; set; }
 
         /// <summary>
         /// Job类型
@@ -56,12 +55,12 @@ namespace Only.Jobs.Core.Business.Info
         /// <summary>
         /// 最后运行时间
         /// </summary>				
-        public System.Nullable<System.DateTime> LastRunTime { get; set; }
+        public DateTime? LastRunTime { get; set; }
 
         /// <summary>
         /// 下次运行时间
         /// </summary>				
-        public System.Nullable<System.DateTime> NextRunTime { get; set; }
+        public DateTime? NextRunTime { get; set; }
 
         /// <summary>
         /// 运行次数
@@ -69,7 +68,7 @@ namespace Only.Jobs.Core.Business.Info
         public int RunCount { get; set; }
 
         /// <summary>
-        /// 状态  0-停止  1-运行   3-正在启动中...   5-停止中...
+        /// 状态：0停止，1运行，3正在启动中，5停止中
         /// </summary>
         public int State { get; set; }
 
@@ -91,7 +90,7 @@ namespace Only.Jobs.Core.Business.Info
         /// <summary>
         /// 创建日期时间
         /// </summary>				
-        public System.DateTime CreatedDateTime { get; set; }
+        public DateTime CreatedDateTime { get; set; }
 
         /// <summary>
         /// 最后更新人ID

@@ -41,7 +41,7 @@ var GridLastUpdatedDateTimeWidth = 140;
         var jsonReader = {};
         if (settings.isPager == true) {
             jsonReader = {
-                root: "data.dataList",
+                root: "data.DataList",
                 page: "data.CurrentPage",
                 total: "data.TotalPage",
                 records: "data.TotalRecord",

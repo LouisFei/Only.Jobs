@@ -1,35 +1,39 @@
-﻿using Only.Jobs.Core.Services;
+﻿using System;
+using System.Text;
 using Quartz;
-using System;
+using Only.Jobs.Core.Services;
 
 namespace Only.Jobs.Core
 {
+    /// <summary>
+    /// 计划任务监听器
+    /// 监听任务执行,更新每个任务的信息，记录每个任务的运行日志。
+    /// </summary>
     public class SchedulerJobListener : IJobListener
     {
-        public void JobExecutionVetoed(IJobExecutionContext context)
-        {
+        public void JobExecutionVetoed(IJobExecutionContext context) { }
 
-        }
-
-        public void JobToBeExecuted(IJobExecutionContext context)
-        {
-
-        }
+        public void JobToBeExecuted(IJobExecutionContext context) { }
 
         public void JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException)
         {
-            System.Guid BackgroundJobId = System.Guid.Empty;
-            Guid.TryParse(context.JobDetail.Key.Name, out BackgroundJobId);
-            DateTime NextFireTimeUtc = TimeZoneInfo.ConvertTimeFromUtc(context.NextFireTimeUtc.Value.DateTime, TimeZoneInfo.Local);
-            DateTime FireTimeUtc = TimeZoneInfo.ConvertTimeFromUtc(context.FireTimeUtc.Value.DateTime, TimeZoneInfo.Local);
+            //获得任务Key
+            Guid backgroundJobId = Guid.Empty;
+            Guid.TryParse(context.JobDetail.Key.Name, out backgroundJobId);
+            //下次运行时间
+            DateTime nextFireTimeUtc = TimeZoneInfo.ConvertTimeFromUtc(context.NextFireTimeUtc.Value.DateTime, TimeZoneInfo.Local);
+            //最后运行时间
+            DateTime fireTimeUtc = TimeZoneInfo.ConvertTimeFromUtc(context.FireTimeUtc.Value.DateTime, TimeZoneInfo.Local);
 
-            double TotalSeconds = context.JobRunTime.TotalSeconds;
-            string JobName = string.Empty;
-            string LogContent = string.Empty;
+            //任务运行时长
+            double totalSeconds = context.JobRunTime.TotalSeconds;
+            string jobName = string.Empty;
+            string logContent = string.Empty;
+
             if (context.MergedJobDataMap != null)
             {
-                JobName = context.MergedJobDataMap.GetString("JobName");
-                System.Text.StringBuilder log = new System.Text.StringBuilder();
+                jobName = context.MergedJobDataMap.GetString("JobName");
+                StringBuilder log = new StringBuilder();
                 int i = 0;
                 foreach (var item in context.MergedJobDataMap)
                 {
@@ -46,16 +50,27 @@ namespace Only.Jobs.Core
                 }
                 if (i > 0)
                 {
-                    LogContent = string.Concat("[", log.ToString(), "]");
+                    logContent = string.Concat("[", log.ToString(), "]");
                 }
             }
+
             if (jobException != null)
             {
-                LogContent = LogContent + " EX:" + jobException.ToString();
+                logContent = logContent + " EX:" + jobException.ToString();
             }
-            new BackgroundJobService().UpdateBackgroundJobStatus(BackgroundJobId, JobName, FireTimeUtc, NextFireTimeUtc, TotalSeconds, LogContent);
+
+            //更新Job运行信息 
+            new BackgroundJobService().UpdateBackgroundJobStatus(backgroundJobId,
+                jobName,
+                fireTimeUtc,
+                nextFireTimeUtc,
+                totalSeconds,
+                logContent);
         }
 
+        /// <summary>
+        /// 监听器名称
+        /// </summary>
         public string Name
         {
             get { return "SchedulerJobListener"; }

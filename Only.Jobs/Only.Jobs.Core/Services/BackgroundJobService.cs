@@ -1,7 +1,7 @@
-﻿using Only.Jobs.Core.Business.Info;
-using Only.Jobs.Core.Business.Manager;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Only.Jobs.Core.Business.Info;
+using Only.Jobs.Core.Business.Manager;
 
 namespace Only.Jobs.Core.Services
 {
@@ -95,20 +95,20 @@ namespace Only.Jobs.Core.Services
         /// 获取允许调度的Job集合
         /// </summary>
         /// <returns></returns>
-        public List<BackgroundJobInfo> GeAllowScheduleJobInfoList()
+        public List<BackgroundJobInfo> GetAllowScheduleJobInfoList()
         {
-            return new BackgroundJobManager().GeAllowScheduleJobInfoList();
+            return new BackgroundJobManager().GetAllowScheduleJobInfoList();
         }
 
         /// <summary>
         /// 更新Job状态
         /// </summary>
-        /// <param name="BackgroundJobId">Job ID</param>
-        /// <param name="State">状态</param>
+        /// <param name="backgroundJobId">Job ID</param>
+        /// <param name="state">状态：0停止，1运行，3正在启动中，5停止中</param>
         /// <returns></returns>
-        public bool UpdateBackgroundJobState(System.Guid BackgroundJobId, int State)
+        public bool UpdateBackgroundJobState(Guid backgroundJobId, int state)
         {
-            return new BackgroundJobManager().UpdateBackgroundJobState(BackgroundJobId, State);
+            return new BackgroundJobManager().UpdateBackgroundJobState(backgroundJobId, state);
         }
 
         /// <summary>
@@ -125,16 +125,24 @@ namespace Only.Jobs.Core.Services
         /// <summary>
         /// 更新Job运行信息 
         /// </summary>
-        /// <param name="BackgroundJobId">Job ID</param>
-        /// <param name="JobName">Job名称</param>
-        /// <param name="LastRunTime">最后运行时间</param>
-        /// <param name="NextRunTime">下次运行时间</param>
-        /// <param name="ExecutionDuration">运行时长</param>
-        /// <param name="RunLog">日志</param>
-        public void UpdateBackgroundJobStatus(System.Guid BackgroundJobId, string JobName, DateTime LastRunTime, DateTime NextRunTime, double ExecutionDuration, string RunLog)
+        /// <param name="backgroundJobId">Job ID</param>
+        /// <param name="jobName">Job名称</param>
+        /// <param name="lastRunTime">最后运行时间</param>
+        /// <param name="nextRunTime">下次运行时间</param>
+        /// <param name="executionDuration">运行时长</param>
+        /// <param name="runLog">日志</param>
+        public void UpdateBackgroundJobStatus(Guid backgroundJobId,
+                                                string jobName,
+                                                DateTime lastRunTime,
+                                                DateTime nextRunTime,
+                                                double executionDuration,
+                                                string runLog)
         {
-            UpdateBackgroundJobStatus(BackgroundJobId, LastRunTime, NextRunTime);
-            WriteBackgroundJoLog(BackgroundJobId, JobName, LastRunTime, ExecutionDuration, RunLog);
+            //更新Job运行信息
+            UpdateBackgroundJobStatus(backgroundJobId, lastRunTime, nextRunTime);
+
+            //Job运行日志记录
+            WriteBackgroundJoLog(backgroundJobId, jobName, lastRunTime, executionDuration, runLog);
         }
 
 

@@ -1,5 +1,6 @@
-﻿using SqlSugar;
-using System;
+﻿using System;
+using System.Configuration;
+using SqlSugar;
 
 namespace Only.Jobs.Core.Business.Manager
 {
@@ -9,7 +10,7 @@ namespace Only.Jobs.Core.Business.Manager
         {
             get
             {
-                return System.Configuration.ConfigurationManager.ConnectionStrings["connectionString"].ConnectionString;
+                return ConfigurationManager.ConnectionStrings["connectionString"].ConnectionString;
             }
         }
 
@@ -17,11 +18,11 @@ namespace Only.Jobs.Core.Business.Manager
         {
             get
             {
-                return System.Configuration.ConfigurationManager.AppSettings.Get("DbType");
+                return ConfigurationManager.AppSettings.Get("DbType");
             }
         }
 
-        public SqlSugarClient db
+        public SqlSugarClient Db
         {
             get
             {
@@ -63,7 +64,7 @@ namespace Only.Jobs.Core.Business.Manager
 
         private string GetDbTableNameSetting(string dbName)
         {
-            return System.Configuration.ConfigurationManager.AppSettings.Get(dbName);
+            return ConfigurationManager.AppSettings.Get(dbName);
         }
     }
 }

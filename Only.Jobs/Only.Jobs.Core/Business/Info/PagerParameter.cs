@@ -1,7 +1,5 @@
-﻿using System;
+﻿using System.Web;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Web;
 
 namespace Only.Jobs.Core.Business.Info
 {
@@ -10,10 +8,7 @@ namespace Only.Jobs.Core.Business.Info
     /// </summary>
     public class PageParameter
     {
-        public PageParameter()
-        {
-
-        }
+        public PageParameter() { }
 
         /// <summary>
         ///  带2个参数的构造函数
@@ -22,8 +17,8 @@ namespace Only.Jobs.Core.Business.Info
         /// <param name="currentPageIndex">当前页索引</param>
         public PageParameter(int rows, int currentPageIndex)
         {
-            this.rows = rows;
-            this.currentPageIndex = currentPageIndex;
+            this.Rows = rows;
+            this.CurrentPageIndex = currentPageIndex;
         }
 
         /// <summary>
@@ -34,20 +29,20 @@ namespace Only.Jobs.Core.Business.Info
         /// <param name="dictionary">条件参数集合</param>
         public PageParameter(int rows, int currentPageIndex, ConcurrentDictionary<string, string> dictionary)
         {
-            this.rows = rows;
-            this.currentPageIndex = currentPageIndex;
+            this.Rows = rows;
+            this.CurrentPageIndex = currentPageIndex;
             this.dictionary = dictionary;
         }
 
         /// <summary>
         /// 每页显示行数
         /// </summary>
-        public int rows { get; set; }
+        public int Rows { get; set; }
 
         /// <summary>
         /// 当前页索引
         /// </summary>
-        public int currentPageIndex { get; set; }
+        public int CurrentPageIndex { get; set; }
 
         /// <summary>
         /// 条件参数集合

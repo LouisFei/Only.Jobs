@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Only.Jobs.Core.Business.Info
 {
     public class PagerModel<T> where T : class
     {
-        public PagerModel()
-        { }
+        public PagerModel() { }
 
         /// <summary>
         /// 带4个参数的构造函数
@@ -22,7 +18,7 @@ namespace Only.Jobs.Core.Business.Info
         {
             this.CurrentPage = currentPage;
             this.TotalRecord = totalRecord;
-            this.dataList = dataList;
+            this.DataList = dataList;
 
             CalculateTotalPage(rows, totalRecord);
         }
@@ -45,7 +41,7 @@ namespace Only.Jobs.Core.Business.Info
         /// <summary>
         /// JSON数据
         /// </summary>
-        public List<T> dataList { get; set; }
+        public List<T> DataList { get; set; }
 
         /// <summary>
         /// 根据每页显示数与总记录数计算出总页数

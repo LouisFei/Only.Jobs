@@ -1,10 +1,13 @@
-﻿using log4net;
-using Only.Jobs.Core;
+﻿using System;
+using log4net;
 using Quartz;
-using System;
+using Only.Jobs.Core;
 
 namespace Only.Jobs.JobItems
 {
+    /// <summary>
+    /// 负责Job的动态调度，此任务为系统核心底层任务，其它业务任务都依赖于它。
+    /// </summary>
     [DisallowConcurrentExecution]
     public class ManagerJob : IJob
     {
@@ -16,6 +19,7 @@ namespace Only.Jobs.JobItems
             _logger.InfoFormat("ManagerJob Execute begin Ver." + Ver.ToString());
             try
             {
+                //Job状态管控
                 new QuartzManager().JobScheduler(context.Scheduler);
                 _logger.InfoFormat("ManagerJob Executing ...");
             }

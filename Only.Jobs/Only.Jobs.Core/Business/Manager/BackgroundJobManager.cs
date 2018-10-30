@@ -1,10 +1,13 @@
-﻿using Only.Jobs.Core.Business.Info;
-using SqlSugar;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using SqlSugar;
+using Only.Jobs.Core.Business.Info;
 
 namespace Only.Jobs.Core.Business.Manager
 {
+    /// <summary>
+    /// 后台任务管理
+    /// </summary>
     public class BackgroundJobManager : BaseManager
     {
         #region BackgroundJobInfo
@@ -18,6 +21,7 @@ namespace Only.Jobs.Core.Business.Manager
         {
             backgroundJobInfo.CreatedDateTime = DateTime.Now;
             backgroundJobInfo.LastUpdatedDateTime = DateTime.Now;
+
             return db.Insertable(backgroundJobInfo).ExecuteCommand() > 0;
         }
 
@@ -56,7 +60,7 @@ namespace Only.Jobs.Core.Business.Manager
         /// </summary>
         /// <param name="BackgroundJobId">Job ID</param>
         /// <returns></returns>
-        public BackgroundJobInfo GetBackgroundJobInfo(System.Guid BackgroundJobId)
+        public BackgroundJobInfo GetBackgroundJobInfo(Guid BackgroundJobId)
         {
             return db.Queryable<BackgroundJobInfo>().Where(it => it.BackgroundJobId == BackgroundJobId).First();
         }
@@ -76,21 +80,21 @@ namespace Only.Jobs.Core.Business.Manager
                 dataList = db.Queryable<BackgroundJobInfo>()
                     .Where(it => it.Name.Contains(Name) && it.IsDelete == 0)
                      .OrderBy(it => it.CreatedDateTime, OrderByType.Desc)
-                     .ToPageList(parameter.currentPageIndex, parameter.rows, ref TotalRecord);
+                     .ToPageList(parameter.CurrentPageIndex, parameter.Rows, ref TotalRecord);
             }
             else
             {
                 dataList = db.Queryable<BackgroundJobInfo>()
                     .Where(it => it.IsDelete == 0)
                       .OrderBy(it => it.CreatedDateTime, OrderByType.Desc)
-                      .ToPageList(parameter.currentPageIndex, parameter.rows, ref TotalRecord);
+                      .ToPageList(parameter.CurrentPageIndex, parameter.Rows, ref TotalRecord);
             }
 
             PagerModel<BackgroundJobInfo> pagerModel = new PagerModel<BackgroundJobInfo>();
-            pagerModel.dataList = dataList;
+            pagerModel.DataList = dataList;
             pagerModel.TotalRecord = TotalRecord;
-            pagerModel.CurrentPage = parameter.currentPageIndex;
-            pagerModel.CalculateTotalPage(parameter.rows, TotalRecord);
+            pagerModel.CurrentPage = parameter.CurrentPageIndex;
+            pagerModel.CalculateTotalPage(parameter.Rows, TotalRecord);
             return pagerModel;
         }
 
@@ -98,25 +102,35 @@ namespace Only.Jobs.Core.Business.Manager
         /// 获取允许调度的Job集合
         /// </summary>
         /// <returns></returns>
-        public List<BackgroundJobInfo> GeAllowScheduleJobInfoList()
+        public List<BackgroundJobInfo> GetAllowScheduleJobInfoList()
         {
-            List<BackgroundJobInfo> list = null;
-            list = db.Queryable<BackgroundJobInfo>().Where(it => it.IsDelete == 0 && (it.State == 1 || it.State == 3 || it.State == 5)).OrderBy(it => it.CreatedDateTime, OrderByType.Desc).ToList();
+            List<BackgroundJobInfo> list = db.Queryable<BackgroundJobInfo>()
+                .Where(it => it.IsDelete == 0 && (it.State == 1 || it.State == 3 || it.State == 5))
+                .OrderBy(it => it.CreatedDateTime, OrderByType.Desc)
+                .ToList();
+
             return list;
         }
 
         /// <summary>
         /// 更新Job状态
         /// </summary>
-        /// <param name="BackgroundJobId">Job ID</param>
-        /// <param name="State">状态</param>
+        /// <param name="backgroundJobId">Job ID</param>
+        /// <param name="state">状态：0停止，1运行，3正在启动中，5停止中</param>
         /// <returns></returns>
-        public bool UpdateBackgroundJobState(System.Guid BackgroundJobId, int State)
+        public bool UpdateBackgroundJobState(Guid backgroundJobId, int state)
         {
-            BackgroundJobInfo backgroundJobInfo = new BackgroundJobInfo();
-            backgroundJobInfo.BackgroundJobId = BackgroundJobId;
-            backgroundJobInfo.State = State;
-            db.Updateable(backgroundJobInfo).UpdateColumns(it => new { it.State }).Where(it => it.BackgroundJobId == BackgroundJobId).ExecuteCommand();
+            var backgroundJobInfo = new BackgroundJobInfo()
+            {
+                BackgroundJobId = backgroundJobId,
+                State = state
+            };
+
+            db.Updateable(backgroundJobInfo)
+                .UpdateColumns(it => new { it.State })
+                .Where(it => it.BackgroundJobId == backgroundJobId)
+                .ExecuteCommand();
+
             return true;
         }
 
@@ -126,7 +140,7 @@ namespace Only.Jobs.Core.Business.Manager
         /// <param name="BackgroundJobId">Job ID</param>
         /// <param name="LastRunTime">最后运行时间</param>
         /// <param name="NextRunTime">下次运行时间</param>
-        public void UpdateBackgroundJobStatus(System.Guid BackgroundJobId, DateTime LastRunTime, DateTime NextRunTime)
+        public void UpdateBackgroundJobStatus(Guid BackgroundJobId, DateTime LastRunTime, DateTime NextRunTime)
         {
             db.Updateable<BackgroundJobInfo>()
                 .ReSetValue(it => it.RunCount == (it.RunCount + 1))
@@ -164,20 +178,20 @@ namespace Only.Jobs.Core.Business.Manager
                 dataList = db.Queryable<BackgroundJobLogInfo>()
                     .Where(it => it.JobName.Contains(JobName))
                      .OrderBy(it => it.CreatedDateTime, OrderByType.Desc)
-                     .ToPageList(parameter.currentPageIndex, parameter.rows, ref TotalRecord);
+                     .ToPageList(parameter.CurrentPageIndex, parameter.Rows, ref TotalRecord);
             }
             else
             {
                 dataList = db.Queryable<BackgroundJobLogInfo>()
                       .OrderBy(it => it.CreatedDateTime, OrderByType.Desc)
-                      .ToPageList(parameter.currentPageIndex, parameter.rows, ref TotalRecord);
+                      .ToPageList(parameter.CurrentPageIndex, parameter.Rows, ref TotalRecord);
             }
 
             PagerModel<BackgroundJobLogInfo> pagerModel = new PagerModel<BackgroundJobLogInfo>();
-            pagerModel.dataList = dataList;
+            pagerModel.DataList = dataList;
             pagerModel.TotalRecord = TotalRecord;
-            pagerModel.CurrentPage = parameter.currentPageIndex;
-            pagerModel.CalculateTotalPage(parameter.rows, TotalRecord);
+            pagerModel.CurrentPage = parameter.CurrentPageIndex;
+            pagerModel.CalculateTotalPage(parameter.Rows, TotalRecord);
             return pagerModel;
         }
 

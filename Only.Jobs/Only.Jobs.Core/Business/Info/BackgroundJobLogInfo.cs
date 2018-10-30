@@ -1,5 +1,4 @@
-﻿using SqlSugar;
-using System;
+﻿using System;
 
 namespace Only.Jobs.Core.Business.Info
 {
@@ -11,12 +10,12 @@ namespace Only.Jobs.Core.Business.Info
         /// <summary>
         /// JobID
         /// </summary>				
-        public System.Guid BackgroundJobLogId { get; set; }
+        public Guid BackgroundJobLogId { get; set; }
 
         /// <summary>
         /// JobID
         /// </summary>
-        public System.Guid BackgroundJobId { get; set; }
+        public Guid BackgroundJobId { get; set; }
 
         /// <summary>
         /// Job名称
@@ -26,17 +25,17 @@ namespace Only.Jobs.Core.Business.Info
         /// <summary>
         /// 执行时间
         /// </summary>				
-        public Nullable<DateTime> ExecutionTime { get; set; }
+        public DateTime? ExecutionTime { get; set; }
 
         /// <summary>
         /// 执行持续时长
         /// </summary>				
-        public Nullable<double> ExecutionDuration { get; set; }
+        public double? ExecutionDuration { get; set; }
 
         /// <summary>
         /// 创建日期时间
         /// </summary>				
-        public System.DateTime CreatedDateTime { get; set; }
+        public DateTime CreatedDateTime { get; set; }
 
         /// <summary>
         /// 日志内容
